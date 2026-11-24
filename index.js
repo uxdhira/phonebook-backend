@@ -2,27 +2,21 @@
 const express = require("express");
 const app = express();
 
-//  EXERCISE 3.7: import morgan (installed with: npm install morgan)
+// EXERCISE 3.7: morgan logging (npm install morgan)
 const morgan = require("morgan");
 
-//  EXERCISE 3.8*: custom token that returns the request body
-// Only POST requests carry data, so for other methods return an empty string
+// EXERCISE 3.8*: token that logs the request body (POST only)
 morgan.token("body", (request) =>
   request.method === "POST" ? JSON.stringify(request.body) : "",
 );
 
-//  EXERCISE 3.5: JSON parser
-// Must come BEFORE morgan, otherwise request.body is undefined when morgan reads it
+// EXERCISE 3.5: JSON parser (must come before morgan)
 app.use(express.json());
 
-// CHANGED for EXERCISE 3.11: serve the frontend production build
-// Express looks for files (index.html, assets/...) in the "dist" folder first.
-// "dist" is the folder created by `npm run build` in the frontend and copied here.
+// EXERCISE 3.11: serve the frontend build from the "dist" folder
 app.use(express.static("dist"));
 
-//  EXERCISE 3.7 + 3.8*: morgan middleware
-// 3.7 (tiny):  app.use(morgan("tiny"));
-// 3.8 (tiny + body): the format below is "tiny" plus :body
+// EXERCISE 3.7 + 3.8*: morgan middleware (tiny format + body)
 app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :body"),
 );
@@ -39,7 +33,7 @@ let persons = [
 // EXERCISE 3.5: random id generator
 const generateId = () => String(Math.floor(Math.random() * 1000000000));
 
-//  EXERCISE 3.1: get all persons
+// EXERCISE 3.1: get all persons
 app.get("/api/persons", (request, response) => {
   response.json(persons);
 });
@@ -62,13 +56,13 @@ app.get("/api/persons/:id", (request, response) => {
   }
 });
 
-//  EXERCISE 3.4: delete a person
+// EXERCISE 3.4: delete a person
 app.delete("/api/persons/:id", (request, response) => {
   persons = persons.filter((p) => p.id !== request.params.id);
   response.status(204).end();
 });
 
-//  EXERCISES 3.5 + 3.6: add a person with validation
+// EXERCISES 3.5 + 3.6: add a person with validation
 app.post("/api/persons", (request, response) => {
   const body = request.body;
 
@@ -88,10 +82,11 @@ app.post("/api/persons", (request, response) => {
   response.json(person);
 });
 
-// CHANGED for EXERCISE 3.10: deployment
-// Render tells the app which port to use through process.env.PORT.
-// On your computer that variable doesn't exist, so it falls back to 3001.
+// EXERCISE 3.10: use the hosting port if there is one, otherwise 3001
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+// EXERCISE 3.10 (Vercel Deployment): export the app so Vercel can run it
+module.exports = app;

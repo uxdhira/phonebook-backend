@@ -16,6 +16,12 @@ app.use(express.json());
 // EXERCISE 3.11: serve the frontend build from the "dist" folder
 app.use(express.static("dist"));
 
+// ADDED for EXERCISE 3.10 (Vercel): send "/" to the page Vercel serves from public/
+// Locally this is never reached, because express.static("dist") already serves "/"
+app.get("/", (request, response) => {
+  response.redirect("/index.html");
+});
+
 // EXERCISE 3.7 + 3.8*: morgan middleware (tiny format + body)
 app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :body"),
